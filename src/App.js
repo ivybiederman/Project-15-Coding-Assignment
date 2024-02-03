@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import BlogList from './Components/BlogList';
+import NewBlogForm from './Components/NewBlogForm';
+import BlogsApi from './rest/BlogsApi';
 
-function App() {
+const App = () => {
+  const [blogs, setBlogs] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await BlogsApi.getAll();
+      setBlogs(data);
+    };
+    fetchData();
+  }, []);
+
+  const handleAddBlog = async newBlog => {
+    const createdBlog = await BlogsApi.create(newBlog);
+    if (createdBlog) {
+      setBlogs([...blogs, createdBlog]);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Blogs</h1>
+      <BlogList blogs={blogs} />
+      <h2>Add New Blog</h2>
+      <NewBlogForm onAddBlog={handleAddBlog} />
     </div>
   );
-}
+};
 
 export default App;
